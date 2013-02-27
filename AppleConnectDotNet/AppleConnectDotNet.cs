@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using AppleConnectDotNet.Enums;
 using AppleConnectDotNet.Connection;
 using AppleConnectDotNet.Entities;
@@ -20,14 +19,35 @@ namespace AppleConnectDotNet
         }
 
 
-        public SalesReport GetSalesReport(Uri url, string userName, string password, string vendorNumber, DateTypes dateType, ReportSubTypes reportSubType, string reportDate)
+        public List<SalesReport> GetSalesReport(string url, string userName, string password, string vendorNumber, DateTypes dateType, ReportSubTypes reportSubType, string reportDate)
         {
-            throw new NotImplementedException();
+            try
+            {
+
+                return AppleConnector.GetSalesReport(AppleConnector.CreateAppleCredentials(url, userName, password, vendorNumber), dateType, reportSubType, reportDate);
+
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+            
         }
 
-        public NewsstandReport GetNewsstandReport(Uri url, string userName, string password, string vendorNumber, DateTypes dateType, ReportSubTypes reportSubType, string reportDate)
+        public List<NewsstandReport> GetNewsstandReport(string url, string userName, string password, string vendorNumber, DateTypes dateType, ReportSubTypes reportSubType, string reportDate)
         {
-            throw new NotImplementedException();
+            try
+            {
+
+                return _appleConnector.GetNewsstandReport(AppleConnector.CreateAppleCredentials(url, userName, password, vendorNumber), dateType, reportSubType, reportDate);
+                
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
         }
     }
 }
