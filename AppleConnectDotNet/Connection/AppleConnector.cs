@@ -8,21 +8,18 @@ using System.Collections.Specialized;
 using System.Net;
 using System.IO;
 using System.IO.Compression;
+using System.Globalization;
 
 namespace AppleConnectDotNet.Connection
 {
     internal class AppleConnector
     {
 
-        public static AppleCredentials CreateAppleCredentials(string url, string userName, string password, string vendorNumber)
-        {
-            
-            Uri uri;
+        private static readonly Uri AppleUrl = new Uri("https://reportingitc.apple.com/autoingestion.tft");
 
-            if (Uri.TryCreate(url, UriKind.Absolute, out uri) == false)
-            {
-                throw new ArgumentException("Invalid URL passed");
-            }
+        public static AppleReportParameters CreateReportParameters(string userName, string password, string vendorNumber, ReportTypes reportType, string dateType, string reportSubType, string dateOfReport)
+        {
+
             if (String.IsNullOrEmpty(userName) == true)
             {
                 throw new ArgumentNullException("Username cannot be blank");
@@ -38,24 +35,43 @@ namespace AppleConnectDotNet.Connection
 
             }
 
-
-            AppleCredentials _credentials = new AppleCredentials()
+            AppleReportParameters reportParameters = new AppleReportParameters()
             {
-                Url = uri,
+                Url = AppleUrl,
                 UserName = userName,
                 Password = password,
-                VendorNumber = vendorNumber
+                VendorNumber = vendorNumber,
+                ReportType = reportType,
+                DateType = ConvertToEnum<DateTypes>(dateType),
+                ReportSubType = ConvertToEnum<ReportSubTypes>(reportSubType),
+                DateOfReport = DateTime.ParseExact(dateOfReport, "yyyyMMdd", CultureInfo.InvariantCulture)
             };
 
-            return _credentials;
-
+            return reportParameters;
         }
 
-        public static List<SalesReport> GetSalesReport(AppleCredentials credentials, DateTypes dateType, ReportSubTypes reportSubType, string reportDate)
+        
+
+    
+
+        private static T ConvertToEnum<T>(object input) where T: struct
+        {
+                T result2;
+                if (Enum.TryParse<T>(input.ToString(), out result2) == false)
+                {
+                    throw new ArgumentException(String.Format("Invalid {0} provided", typeof(T)));
+                }
+                //T result = (T)Enum.Parse(typeof(T), input.ToString(), true);
+                return result2;
+                //Enum.TryParse<T>(input, out result);
+           
+        }
+
+        public static List<SalesReport> GetSalesReport(AppleReportParameters reportParameters)
         {
             using (WebClient wc = new WebClient())
             {
-                byte[] response = wc.UploadValues(credentials.Url, "POST", CreatePostParameters(credentials, ReportTypes.Sales, dateType, reportSubType, reportDate));
+                byte[] response = wc.UploadValues(reportParameters.Url, "POST", CreatePostParameters(reportParameters));
                 string errorMsg = wc.ResponseHeaders["ERRORMSG"];
 
                 if (String.IsNullOrEmpty(errorMsg))
@@ -92,22 +108,23 @@ namespace AppleConnectDotNet.Connection
             }
         }
 
-        public List<NewsstandReport> GetNewsstandReport(AppleCredentials credentials, DateTypes dateType, ReportSubTypes reportSubType, string reportDate)
+        public List<NewsstandReport> GetNewsstandReport(AppleReportParameters reportParameters)
         {
             throw new NotImplementedException();
         }
 
-        private static NameValueCollection CreatePostParameters(AppleCredentials credentials, ReportTypes reportType, DateTypes dateTypes, ReportSubTypes reportSubTypes, string reportDate)
+
+        private static NameValueCollection CreatePostParameters(AppleReportParameters reportParamters)
         {
 
             NameValueCollection postParams = new NameValueCollection();
-            postParams.Add("USERNAME", credentials.UserName);
-            postParams.Add("PASSWORD", credentials.Password);
-            postParams.Add("VNDNUMBER", credentials.VendorNumber);
-            postParams.Add("TYPEOFREPORT", reportType.ToString());
-            postParams.Add("DATETYPE", dateTypes.ToString());
-            postParams.Add("REPORTTYPE", reportSubTypes.ToString());
-            postParams.Add("REPORTDATE", reportDate);
+            postParams.Add("USERNAME", reportParamters.UserName);
+            postParams.Add("PASSWORD", reportParamters.Password);
+            postParams.Add("VNDNUMBER", reportParamters.VendorNumber);
+            postParams.Add("TYPEOFREPORT", reportParamters.ReportType.ToString());
+            postParams.Add("DATETYPE", reportParamters.DateType.ToString());
+            postParams.Add("REPORTTYPE", reportParamters.ReportSubType.ToString());
+            postParams.Add("REPORTDATE", reportParamters.DateOfReport.ToString("yyyyMMdd"));
 
             return postParams;
         }

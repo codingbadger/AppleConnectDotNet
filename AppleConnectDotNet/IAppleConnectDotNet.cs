@@ -8,8 +8,8 @@ namespace AppleConnectDotNet
 {
     public interface IAppleConnectDotNet
     {
-        List<SalesReport> GetSalesReport(string url, string userName, string password, string vendorNumber, DateTypes dateType, ReportSubTypes reportSubType, string reportDate);
-        List<NewsstandReport> GetNewsstandReport(string url, string userName, string password, string vendorNumber, DateTypes dateType, ReportSubTypes reportSubType, string reportDate);      
+        List<SalesReport> GetSalesReport( string userName, string password, string vendorNumber, string dateType, string reportSubType, string reportDate);
+        List<NewsstandReport> GetNewsstandReport(string userName, string password, string vendorNumber, string dateType, string reportSubType, string reportDate);      
         
     }
 }

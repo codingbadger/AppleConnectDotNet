@@ -42,7 +42,7 @@
   <ItemGroup>
     <Compile Include="AppleConnectDotNet.cs" />
     <Compile Include="Connection\AppleConnector.cs" />
-    <Compile Include="Connection\AppleCredentials.cs" />
+    <Compile Include="Connection\AppleReportParameters.cs" />
     <Compile Include="Entities\Report.cs" />
     <Compile Include="Entities\NewsstandReport.cs" />
     <Compile Include="Entities\SalesReport.cs" />

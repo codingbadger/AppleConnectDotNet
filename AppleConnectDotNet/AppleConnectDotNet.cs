@@ -19,12 +19,12 @@ namespace AppleConnectDotNet
         }
 
 
-        public List<SalesReport> GetSalesReport(string url, string userName, string password, string vendorNumber, DateTypes dateType, ReportSubTypes reportSubType, string reportDate)
+        public List<SalesReport> GetSalesReport(string userName, string password, string vendorNumber, string dateType, string reportSubType, string reportDate)
         {
             try
             {
-
-                return AppleConnector.GetSalesReport(AppleConnector.CreateAppleCredentials(url, userName, password, vendorNumber), dateType, reportSubType, reportDate);
+                
+                return AppleConnector.GetSalesReport(AppleConnector.CreateReportParameters( userName, password, vendorNumber, ReportTypes.Sales, dateType, reportSubType, reportDate));
 
             }
             catch (Exception ex)
@@ -35,12 +35,12 @@ namespace AppleConnectDotNet
             
         }
 
-        public List<NewsstandReport> GetNewsstandReport(string url, string userName, string password, string vendorNumber, DateTypes dateType, ReportSubTypes reportSubType, string reportDate)
+        public List<NewsstandReport> GetNewsstandReport( string userName, string password, string vendorNumber, string dateType, string reportSubType, string reportDate)
         {
             try
             {
 
-                return _appleConnector.GetNewsstandReport(AppleConnector.CreateAppleCredentials(url, userName, password, vendorNumber), dateType, reportSubType, reportDate);
+                return _appleConnector.GetNewsstandReport(AppleConnector.CreateReportParameters( userName, password, vendorNumber, ReportTypes.Newsstand, dateType, reportSubType, reportDate));
                 
             }
             catch (Exception ex)
